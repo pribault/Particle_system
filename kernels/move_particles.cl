@@ -1,37 +1,49 @@
-__kernel void   move_particles_to_cursor(__global __read_write float3 *pos, __global __read_write float3 *speed, double n, double x, double y, double g)
+__kernel void   move_particles_to_cursor(
+    __global __read_write float2 *pos,
+    __global __read_write float2 *speed,
+    __global __read_write float4 *color,
+    double n, double x, double y, double g)
 {
     size_t      index = get_global_id(0);
-    float3      vec;
+    float2      vec;
 
-    vec = normalize((float3){x, y, 0} - pos[index]);
-    g /= pow(sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2)), 2);
+    vec = normalize((float2){x, y} - pos[index]);
+    g /= pow(sqrt(pow(vec.x, 2) + pow(vec.y, 2)), 2);
     vec.x *= g;
     vec.y *= g;
-    vec.z *= g;
     speed[index] += vec;
     pos[index] += speed[index];
+    color[index].x += speed[index].x * 2;
+    color[index].y += speed[index].y;
+    color[index].z += speed[index].x;
 }
 
-__kernel void   move_particles(__global __read_write float3 *pos, __global __read_write float3 *default_pos, __global __read_write float3 *speed, double n, double g)
+__kernel void   move_particles(
+    __global __read_write float2 *pos,
+    __global __read_write float2 *default_pos,
+    __global __read_write float2 *speed,
+    __global __read_write float4 *color,
+    double n, double g)
 {
     size_t      index = get_global_id(0);
-    float3      vec = (float3){0, 0, 0};
+    float2      vec = (float2){0, 0};
     double      f = 0.002;
-    float3      tmp;
+    float2      tmp;
 
     tmp = speed[index];
     tmp.x *= f;
     tmp.y *= f;
-    tmp.z *= f;
     speed[index] -= tmp;
     vec = normalize(default_pos[index] - pos[index]);
-    if (vec.x || vec.y || vec.z)
+    if (vec.x || vec.y)
     {
-        g /= pow(sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2)), 2);
+        g /= pow(sqrt(pow(vec.x, 2) + pow(vec.y, 2)), 2);
         vec.x *= g;
         vec.y *= g;
-        vec.z *= g;
         speed[index] += vec;
     }
     pos[index] += speed[index];
+    color[index].x += speed[index].x * 2;
+    color[index].y += speed[index].y;
+    color[index].z += speed[index].x;
 }

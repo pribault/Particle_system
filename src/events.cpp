@@ -59,25 +59,68 @@ void    KeyEventHandler(const SDL_Event &e)
     {
         case SDL_KEYUP:
         {
-            try
+            if (event.state == SDL_RELEASED)
             {
-                keyboard[event.keysym.sym] = false;
-            }
-            catch (const std::exception &e)
-            {
-                _log << "cannot set key " << event.keysym.sym << " to down" << std::endl;
+                try
+                {
+                    keyboard[event.keysym.sym] = false;
+                }
+                catch (const std::exception &e)
+                {
+                    _log << "cannot set key " << event.keysym.sym << " to down" << std::endl;
+                }
             }
             break ;
         }
         case SDL_KEYDOWN:
         {
-            try
+            if (event.state == SDL_PRESSED)
             {
-                keyboard[event.keysym.sym] = true;
-            }
-            catch (const std::exception &e)
-            {
-                _log << "cannot set key " << event.keysym.sym << " to down" << std::endl;
+                if (!isPressed(event.keysym.sym))
+                {
+                    try
+                    {
+                        keyboard[event.keysym.sym] = true;
+                    }
+                    catch (const std::exception &e)
+                    {
+                        _log << "cannot set key " << event.keysym.sym << " to down" << std::endl;
+                    }
+                    switch (event.keysym.sym)
+                    {
+                        case SDLK_1:
+                        {
+                            _log << "here" << std::endl;
+                            particleDefaultPositions->acquire();
+
+                            init_square->setArg(*particleDefaultPositions, 0);
+                            init_square->setArg((double)particles, 1);
+
+                            init_square->enqueue(particles);
+
+                            particleDefaultPositions->release();
+
+                            window->clFinish();
+                            break ;
+                        }
+                        case SDLK_2:
+                        {
+                            particleDefaultPositions->acquire();
+
+                            init_circle->setArg(*particleDefaultPositions, 0);
+                            init_circle->setArg((double)particles, 1);
+
+                            init_circle->enqueue(particles);
+
+                            particleDefaultPositions->release();
+
+                            window->clFinish();
+                            break ;
+                        }
+                        default:
+                            break ;
+                    }
+                }
             }
             break ;
         }
@@ -153,8 +196,10 @@ void    MouseButtonEventHandler(const SDL_Event &e)
     }
 }
 
-void    MouseWheelEventHandler(const SDL_Event &)
+void    MouseWheelEventHandler(const SDL_Event &e)
 {
+    SDL_MouseWheelEvent event = e.wheel;
+    gravity *= pow(2, event.y);
 }
 
 bool    isPressed(const SDL_Keycode &key)

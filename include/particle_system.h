@@ -41,12 +41,32 @@ extern glm::vec2            cursor;
 extern gl::Program          *renderer;
 
 extern size_t               particles;
+extern double               gravity;
+extern double               reformer;
 
 #include "cl_Kernel.h"
+
+namespace   cl
+{
+    class   Kernel;
+}
+
+extern cl::Program          *init;
+extern cl::Kernel           *init_square;
+extern cl::Kernel           *init_circle;
+extern cl::Kernel           *init_speed;
+
+extern cl::Program          *move;
+extern cl::Kernel           *move_particles;
+extern cl::Kernel           *move_particles_to_cursor;
+
+extern cl::Program          *init_colors;
+extern cl::Kernel           *init_colors_rainbow;
 
 template    <typename T>
 class       Buffer;
 
-extern Buffer<cl_float3>    *particlePositions;
-extern Buffer<cl_float3>    *particleSpeeds;
+extern Buffer<cl_float2>    *particleDefaultPositions;
+extern Buffer<cl_float2>    *particlePositions;
+extern Buffer<cl_float2>    *particleSpeeds;
 extern Buffer<cl_float4>    *particleColors;

@@ -17,6 +17,7 @@ gl::Program         *renderer = nullptr;
 
 cl::Program         *init = nullptr;
 cl::Kernel          *init_square = nullptr;
+cl::Kernel          *init_circle = nullptr;
 cl::Kernel          *init_speed = nullptr;
 
 cl::Program         *move = nullptr;
@@ -26,15 +27,15 @@ cl::Kernel          *move_particles_to_cursor = nullptr;
 cl::Program         *init_colors = nullptr;
 cl::Kernel          *init_colors_rainbow = nullptr;
 
-Buffer<cl_float3>   *particleDefaultPositions = nullptr;
-Buffer<cl_float3>   *particlePositions = nullptr;
-Buffer<cl_float3>   *particleSpeeds = nullptr;
+Buffer<cl_float2>   *particleDefaultPositions = nullptr;
+Buffer<cl_float2>   *particlePositions = nullptr;
+Buffer<cl_float2>   *particleSpeeds = nullptr;
 Buffer<cl_float4>   *particleColors = nullptr;
 
-size_t              particles = 500000;
+size_t              particles = 1000000;
 
 double              gravity = 0.0001;
-double              reformer = gravity;
+double              reformer = 0.0002;
 
 std::string strSize(size_t size)
 {
@@ -130,6 +131,7 @@ void    initKernels(void)
     try
     {
         init_square = new cl::Kernel(*init, "init_square");
+        init_circle = new cl::Kernel(*init, "init_circle");
         init_speed = new cl::Kernel(*init, "init_speed");
         move_particles = new cl::Kernel(*move, "move_particles");
         move_particles_to_cursor = new cl::Kernel(*move, "move_particles_to_cursor");
@@ -146,10 +148,52 @@ void    initBuffers(void)
 {
     try
     {
-        particleDefaultPositions = new Buffer<cl_float3>(particles);
-        particlePositions = new Buffer<cl_float3>(particles);
-        particleSpeeds = new Buffer<cl_float3>(particles);
+        particleDefaultPositions = new Buffer<cl_float2>(particles);
+        particlePositions = new Buffer<cl_float2>(particles);
+        particleSpeeds = new Buffer<cl_float2>(particles);
         particleColors = new Buffer<cl_float4>(particles);
+
+        //  default pos
+
+        particleDefaultPositions->acquire();
+
+        init_square->setArg(*particleDefaultPositions, 0);
+        init_square->setArg((double)particles, 1);
+
+        init_square->enqueue(particles);
+
+        //  pos
+
+        particlePositions->acquire();
+
+        clEnqueueCopyBuffer(window->getQueue(), particleDefaultPositions->getMem(), particlePositions->getMem(), 0, 0, particlePositions->getSize(), 0, NULL, NULL);
+
+        particlePositions->release();
+
+        particleDefaultPositions->release();
+
+        //  speed
+
+        particleSpeeds->acquire();
+
+        init_speed->setArg(*particleSpeeds, 0);
+
+        init_speed->enqueue(particles);
+
+        particleSpeeds->release();
+
+        //  colors
+
+        particleColors->acquire();
+
+        init_colors_rainbow->setArg(*particleColors, 0);
+        init_colors_rainbow->setArg((double)particles, 1);
+
+        init_colors_rainbow->enqueue(particles);
+
+        particleColors->release();
+
+        window->clFinish();
     }
     catch (const std::exception &e)
     {
@@ -178,7 +222,7 @@ int     main(void)
 
     try
     {
-        window = new Window(TITLE, 1920, 1080);
+        window = new Window(TITLE, 960, 540);
     }
     catch (const std::exception &e)
     {
@@ -200,59 +244,8 @@ int     main(void)
         exit(EXIT_FAILURE);
     }
 
-    initBuffers();
     initKernels();
-
-    //  default pos
-
-    particleDefaultPositions->acquire();
-
-    init_square->setArg(*particleDefaultPositions, 0);
-    init_square->setArg((double)particles, 1);
-
-    init_square->enqueue(particles);
-
-    particleDefaultPositions->release();
-
-    window->clFinish();
-
-    //  pos
-
-    particlePositions->acquire();
-
-    init_square->setArg(*particlePositions, 0);
-    init_square->setArg((double)particles, 1);
-
-    init_square->enqueue(particles);
-
-    particlePositions->release();
-
-    window->clFinish();
-
-    //  speed
-
-    particleSpeeds->acquire();
-
-    init_speed->setArg(*particleSpeeds, 0);
-
-    init_speed->enqueue(particles);
-
-    particleSpeeds->release();
-
-    window->clFinish();
-
-    //  colors
-
-    particleColors->acquire();
-
-    init_colors_rainbow->setArg(*particleColors, 0);
-    init_colors_rainbow->setArg((double)particles, 1);
-
-    init_colors_rainbow->enqueue(particles);
-
-    particleColors->release();
-
-    window->clFinish();
+    initBuffers();
 
     while (1)
     {
@@ -269,47 +262,67 @@ int     main(void)
 
         if (window->isIn() && isPressed(SDL_BUTTON_LEFT))
         {
-            particlePositions->acquire();
-            particleSpeeds->acquire();
+            try
+            {
+                particlePositions->acquire();
+                particleSpeeds->acquire();
+                particleColors->acquire();
 
-            move_particles_to_cursor->setArg(*particlePositions, 0);
-            move_particles_to_cursor->setArg(*particleSpeeds, 1);
-            move_particles_to_cursor->setArg((double)particles, 2);
-            move_particles_to_cursor->setArg((double)cursor.x, 3);
-            move_particles_to_cursor->setArg((double)cursor.y, 4);
-            move_particles_to_cursor->setArg(gravity, 5);
+                move_particles_to_cursor->setArg(*particlePositions, 0);
+                move_particles_to_cursor->setArg(*particleSpeeds, 1);
+                move_particles_to_cursor->setArg(*particleColors, 2);
+                move_particles_to_cursor->setArg((double)particles, 3);
+                move_particles_to_cursor->setArg((double)cursor.x, 4);
+                move_particles_to_cursor->setArg((double)cursor.y, 5);
+                move_particles_to_cursor->setArg(gravity, 6);
 
-            move_particles_to_cursor->enqueue(particles);
+                move_particles_to_cursor->enqueue(particles);
 
-            particlePositions->release();
-            particleSpeeds->release();
-            window->clFinish();
+                particlePositions->release();
+                particleSpeeds->release();
+                particleColors->release();
+                window->clFinish();
+            }
+            catch (const std::exception &e)
+            {
+                _log << "cannot launch move_particles_to_cursor kernel: " << e.what() << std::endl;
+            }
         }
         else
         {
-            particleDefaultPositions->acquire();
-            particlePositions->acquire();
-            particleSpeeds->acquire();
+            try
+            {
+                particleDefaultPositions->acquire();
+                particlePositions->acquire();
+                particleSpeeds->acquire();
+                particleColors->acquire();
 
-            move_particles->setArg(*particlePositions, 0);
-            move_particles->setArg(*particleDefaultPositions, 1);
-            move_particles->setArg(*particleSpeeds, 2);
-            move_particles->setArg((double)particles, 3);
-            move_particles->setArg((double)reformer, 4);
+                move_particles->setArg(*particlePositions, 0);
+                move_particles->setArg(*particleDefaultPositions, 1);
+                move_particles->setArg(*particleSpeeds, 2);
+                move_particles->setArg(*particleColors, 3);
+                move_particles->setArg((double)particles, 4);
+                move_particles->setArg((double)reformer, 5);
 
-            move_particles->enqueue(particles);
+                move_particles->enqueue(particles);
 
-            particleDefaultPositions->release();
-            particlePositions->release();
-            particleSpeeds->release();
-            window->clFinish();
+                particleDefaultPositions->release();
+                particlePositions->release();
+                particleSpeeds->release();
+                particleColors->release();
+                window->clFinish();
+            }
+            catch (const std::exception &e)
+            {
+                _log << "cannot launch move_particles kernel: " << e.what() << std::endl;
+            }
         }
         drawParticles();
         now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> diff = now - prev;
         if (diff.count())
         {
-            window->setTitle(std::string(TITLE).append(" ").append(std::to_string(1000 / (diff.count())).append("fps")));
+            window->setTitle(std::string(TITLE).append(" ").append(std::to_string((size_t)(1000 / (diff.count()))).append("fps")));
             if (diff.count() < 1000 / FPS_LOCK)
                 usleep((1000 / FPS_LOCK - diff.count()) * 1000);
         }
