@@ -1,6 +1,7 @@
 #include "particle_system.h"
 #include "Log.h"
 #include "pribault.h"
+#include <math.h>
 
 void    windowEventHandler(const SDL_Event &e)
 {
