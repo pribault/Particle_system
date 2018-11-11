@@ -34,7 +34,7 @@ Program::Program(const std::string &file)
         }
         in.close();
 
-        _log << "creating OpenCL program from source" << std::endl;
+        _log << "creating OpenCL program '" << file << "' from source" << std::endl;
 
         tmp = str.c_str();
         _id = clCreateProgramWithSource(window->getContext(), 1, &tmp, NULL, &error);

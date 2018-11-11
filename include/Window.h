@@ -4,9 +4,11 @@
 #include <SDL2/SDL.h>
 #include <string>
 
+#define CL_TARGET_OPENCL_VERSION	200
+
 #if defined __APPLE__
 # include <OpenCL/cl.h>
-#elif defined __linux__
+#else
 # include <CL/opencl.h>
 #endif
 

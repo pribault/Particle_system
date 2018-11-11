@@ -2,11 +2,13 @@
 #include "Log.h"
 #include "pribault.h"
 
-# if defined (__APPLE__)
-#  include <OpenGL/CGLCurrent.h>
-# elif defined (__linux__)
-#  include <GL/glx.h>
-# endif
+#if defined (__APPLE__)
+# include <OpenGL/CGLCurrent.h>
+#elif defined (__linux__)
+# include <GL/glx.h>
+#elif (defined _WIN32 || defined _WIN64)
+# include <windows.h>
+#endif
 
 using namespace pribault;
 
@@ -258,6 +260,34 @@ pribault::Window::Window(const std::string &title, const int &width, const int &
         SDL_DestroyWindow(_window);
         throw (pribault::BasicException(std::string("cannot create opencl context: ").append(std::to_string(error))));
     }
+
+#elif (defined _WIN32 || defined _WIN64)
+
+	static cl_context_properties	properties[] = {
+		CL_CONTEXT_PLATFORM, 0,
+		CL_GL_CONTEXT_KHR, 0,
+		CL_WGL_HDC_KHR, 0,
+		0
+	};
+
+	properties[1] = (cl_context_properties)_clPlatform;
+	properties[3] = (cl_context_properties)wglGetCurrentContext();
+	properties[5] = (cl_context_properties)wglGetCurrentDC();
+	_clContext = clCreateContext(properties, 1, &_clDevice, NULL, NULL, &error);
+	if (error != CL_SUCCESS)
+	{
+		SDL_GL_DeleteContext(_context);
+		SDL_DestroyWindow(_window);
+		throw (pribault::BasicException(std::string("cannot create opencl context: ").append(std::to_string(error))));
+	}
+	_clQueue = clCreateCommandQueue(_clContext, _clDevice, NULL, &error);
+	if (error != CL_SUCCESS)
+	{
+		clReleaseCommandQueue(_clQueue);
+		SDL_GL_DeleteContext(_context);
+		SDL_DestroyWindow(_window);
+		throw (pribault::BasicException(std::string("cannot create opencl context: ").append(std::to_string(error))));
+	}
 
 #endif
 

@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <signal.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <glm/vec4.hpp>
 
 using namespace pribault;
@@ -26,6 +26,7 @@ cl::Kernel          *move_particles_to_cursor = nullptr;
 
 cl::Program         *init_colors = nullptr;
 cl::Kernel          *init_colors_rainbow = nullptr;
+cl::Kernel          *init_colors_burning_ship = nullptr;
 
 Buffer<cl_float2>   *particleDefaultPositions = nullptr;
 Buffer<cl_float2>   *particlePositions = nullptr;
@@ -73,6 +74,8 @@ void    sigHandler(int sig)
 
 void    deleteKernels(void)
 {
+	if (init_colors_burning_ship)
+		delete init_colors_burning_ship;
     if (init_colors_rainbow)
         delete init_colors_rainbow;
     if (init_colors)
@@ -136,6 +139,7 @@ void    initKernels(void)
         move_particles = new cl::Kernel(*move, "move_particles");
         move_particles_to_cursor = new cl::Kernel(*move, "move_particles_to_cursor");
         init_colors_rainbow = new cl::Kernel(*init_colors, "init_colors_rainbow");
+		init_colors_burning_ship = new cl::Kernel(*init_colors, "init_colors_burning_ship");
     }
     catch (const std::exception &e)
     {
@@ -186,10 +190,10 @@ void    initBuffers(void)
 
         particleColors->acquire();
 
-        init_colors_rainbow->setArg(*particleColors, 0);
-        init_colors_rainbow->setArg((double)particles, 1);
+		init_colors_rainbow->setArg(*particleColors, 0);
+		init_colors_rainbow->setArg((double)particles, 1);
 
-        init_colors_rainbow->enqueue(particles);
+		init_colors_rainbow->enqueue(particles);
 
         particleColors->release();
 
@@ -202,7 +206,7 @@ void    initBuffers(void)
     }
 }
 
-int     main(void)
+int     main(int, char **)
 {
     static const std::map<Uint32, t_event_handler>  handlers({
         std::make_pair(SDL_WINDOWEVENT, windowEventHandler),
@@ -222,7 +226,7 @@ int     main(void)
 
     try
     {
-        window = new Window(TITLE, 960, 540);
+        window = new Window(TITLE, 1920, 1080);
     }
     catch (const std::exception &e)
     {
@@ -323,8 +327,8 @@ int     main(void)
         if (diff.count())
         {
             window->setTitle(std::string(TITLE).append(" ").append(std::to_string((size_t)(1000 / (diff.count()))).append("fps")));
-            if (diff.count() < 1000 / FPS_LOCK)
-                usleep((1000 / FPS_LOCK - diff.count()) * 1000);
+            /*if (diff.count() < 1000 / FPS_LOCK)
+                usleep((1000 / FPS_LOCK - diff.count()) * 1000);*/
         }
         prev = now;
     }
