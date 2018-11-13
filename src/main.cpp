@@ -46,7 +46,7 @@ std::string strSize(size_t size)
     {
         if (str.length())
             str.append(" ");
-        str.append(std::to_string((size >> 30) & (BIT(10) - 1))).append("Mb");
+        str.append(std::to_string((size >> 30) & (BIT(10) - 1))).append("Gb");
     }
     if (size >= BIT(20))
     {
@@ -92,6 +92,7 @@ void    deleteKernels(void)
         delete init_square;
     if (init)
         delete init;
+	_log << "kernels deleted" << std::endl;
 }
 
 void    deleteBuffers(void)
@@ -104,6 +105,7 @@ void    deleteBuffers(void)
         delete particleSpeeds;
     if (particleColors)
         delete particleColors;
+	_log << "buffers deleted" << std::endl;
 }
 
 void    atExit(void)
@@ -198,12 +200,25 @@ void    initBuffers(void)
         particleColors->release();
 
         window->clFinish();
+
+		_log << "buffers initialized with " << particles << "particles" << std::endl;
     }
     catch (const std::exception &e)
     {
         _log << "cannot create Buffer: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
+}
+
+void	printHelp(void)
+{
+	_log << "commands:" << std::endl
+		<< "	- escape: quit program" << std::endl
+		<< "	- left click: attract particles to your cursor" << std::endl
+		<< "	- mouse wheel: increase or decrease attraction force" << std::endl
+		<< "	- lshift + mouse wheel: increase or decrease particle number" << std::endl
+		<< "	- 1: set particles default position to square" << std::endl
+		<< "	- 2: set particles default position to circle" << std::endl;
 }
 
 int     main(int, char **)
@@ -226,7 +241,7 @@ int     main(int, char **)
 
     try
     {
-        window = new Window(TITLE, 1920, 1080);
+        window = new Window(TITLE, 1440, 810);
     }
     catch (const std::exception &e)
     {
@@ -250,6 +265,8 @@ int     main(int, char **)
 
     initKernels();
     initBuffers();
+
+	printHelp();
 
     while (1)
     {
@@ -326,7 +343,7 @@ int     main(int, char **)
         std::chrono::duration<double, std::milli> diff = now - prev;
         if (diff.count())
         {
-            window->setTitle(std::string(TITLE).append(" ").append(std::to_string((size_t)(1000 / (diff.count()))).append("fps")));
+            window->setTitle(std::string(TITLE).append(" ").append(std::to_string(particles)).append("particles ").append(std::to_string((size_t)(1000 / (diff.count()))).append("fps")));
             /*if (diff.count() < 1000 / FPS_LOCK)
                 usleep((1000 / FPS_LOCK - diff.count()) * 1000);*/
         }

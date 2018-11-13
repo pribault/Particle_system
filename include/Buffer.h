@@ -63,6 +63,7 @@ class   Buffer
         }
         ~Buffer(void)
         {
+			CL_CALL(clReleaseMemObject(_clId));
             GL_CALL(glDeleteBuffers(1, &_glId));
             _log << "buffer deleted" << std::endl;
         }

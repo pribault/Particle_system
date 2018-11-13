@@ -31,35 +31,35 @@ __kernel void   init_colors_rainbow(__global __read_write float4 *colors, double
             1,
             0,
             -3 * x - 2,
-            n / 10000000};
+            10000 / sqrt(n)};
     else if (x < -0.333333)
         colors[index] = (float4){
             1,
             3 * x + 2,
             0,
-            n / 10000000};
+            10000 / sqrt(n)};
     else if (x < 0)
         colors[index] = (float4){
             -3 * x,
             1,
             0,
-            n / 10000000};
+            10000 / sqrt(n)};
     else if (x < 0.333333)
         colors[index] = (float4){
             0,
             1,
             3 * x,
-            n / 10000000};
+            10000 / sqrt(n)};
     else if (x < 0.666666)
         colors[index] = (float4){
             0,
             -3 * x + 2,
             1,
-            n / 10000000};
+            10000 / sqrt(n)};
     else
         colors[index] = (float4){
             3 * x - 2,
             0,
             1,
-            n / 10000000};
+            10000 / sqrt(n)};
 }

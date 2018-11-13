@@ -12,6 +12,8 @@
 void    drawParticles(void);
 
 std::string strSize(size_t size);
+void		initBuffers(void);
+void		deleteBuffers(void);
 
 /*
 **  events

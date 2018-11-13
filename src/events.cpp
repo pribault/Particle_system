@@ -199,7 +199,19 @@ void    MouseButtonEventHandler(const SDL_Event &e)
 void    MouseWheelEventHandler(const SDL_Event &e)
 {
     SDL_MouseWheelEvent event = e.wheel;
-    gravity *= pow(2, event.y);
+	if (isPressed(SDLK_LSHIFT))
+	{
+		deleteBuffers();
+		particles *= pow(2, event.y);
+		if (!particles)
+		{
+			particles = 1;
+			_log << "particles number cannot be less than 1, you will not make me segfault today <3" << std::endl;
+		}
+		initBuffers();
+	}
+	else
+		gravity *= pow(2, event.y);
 }
 
 bool    isPressed(const SDL_Keycode &key)
