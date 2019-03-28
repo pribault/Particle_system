@@ -1,10 +1,10 @@
 #version 410 core
 
-in vec4     cin;
+in vec4		cin;
 
-out vec4    color;
+out vec4	color;
 
-void main()
+void	main()
 {
-    color = cin;
+	color = cin;
 }

@@ -10,15 +10,15 @@
 
 #include <string>
 
-namespace   cl
+namespace	cl
 {
-    class   Program
-    {
-        friend class    Kernel;
-        public:
-            Program(const std::string &file);
-            ~Program(void);
-        private:
-            cl_program  _id;
-    };
+	class	Program
+	{
+		friend class	Kernel;
+		public:
+			Program(const std::string &file);
+			~Program(void);
+		private:
+			cl_program	_id;
+	};
 }

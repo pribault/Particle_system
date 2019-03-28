@@ -6,7 +6,7 @@ SRC_DIR =	src
 OBJ_DIR =	.obj
 INC_DIR =	include
 
-CLASS =	Window Log gl_Shader gl_Program cl_Program cl_Kernel
+CLASS =	Window Log gl_Shader gl_Program cl_Program cl_Kernel Camera
 SRC =	$(sort \
 		$(patsubst %, %.cpp, $(CLASS)) \
 		main.cpp events.cpp draw.cpp \
@@ -27,7 +27,7 @@ ifeq ($(OS), Darwin)
 endif
 endif
 
-JOBS =	4
+JOBS =	6
 
 .PHONY: all clean fclean re
 
