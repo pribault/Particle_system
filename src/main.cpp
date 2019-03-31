@@ -303,9 +303,8 @@ int		main(int, char **)
 			{
 				handlers.at(event.type)(event);
 			}
-			catch (const std::exception &e)
+			catch (const std::exception &)
 			{
-				_log << "cannot handle event (type=" << event.type << "):" << e.what();
 			}
 		handleEvents();
 

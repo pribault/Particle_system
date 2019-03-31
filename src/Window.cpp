@@ -4,6 +4,7 @@
 
 #if defined (__APPLE__)
 # include <OpenGL/CGLCurrent.h>
+# include <OpenCL/opencl.h>
 #elif defined (__linux__)
 # include <GL/glx.h>
 #elif (defined _WIN32 || defined _WIN64)
@@ -66,12 +67,14 @@ pribault::Window::Window(const std::string &title, const int &width, const int &
 	**	Glew initialization
 	*/
 
+#ifndef __APPLE__
 	if ((ret = glewInit()) != GLEW_OK)
 	{
 		SDL_GL_DeleteContext(_context);
 		SDL_DestroyWindow(_window);
 		throw (pribault::BasicException(std::string("cannot initialize glew: ").append((const char *)glewGetErrorString(ret))));
 	}
+#endif
 
 	/*
 	**	OpenGL initialization
@@ -200,11 +203,11 @@ pribault::Window::Window(const std::string &title, const int &width, const int &
 		buffer.resize(returnedSize);
 		_log << "device extensions: " << buffer << std::endl;
 
-		if (buffer.find("cl_khr_gl_sharing") == std::string::npos)
+		if (buffer.find(SHARING_EXTENSION) == std::string::npos)
 		{
 			SDL_GL_DeleteContext(_context);
 			SDL_DestroyWindow(_window);
-			throw (pribault::BasicException("device doesn't support cl_khr_gl_sharing"));
+			throw (pribault::BasicException(std::string("device doesn't support ") + SHARING_EXTENSION));
 		}
 	}
 

@@ -1,13 +1,18 @@
 #pragma once
 
-#include <GL/glew.h>
+#ifdef __APPLE__
+# include <OpenGL/gl3.h>
+#else
+# include <GL/glew.h>
+#endif
 #include <SDL2/SDL.h>
 #include <string>
 
 #define CL_TARGET_OPENCL_VERSION	200
 
 #if defined __APPLE__
-# include <OpenCL/cl.h>
+# include <OpenGL/CGLCurrent.h>
+# include <OpenCL/opencl.h>
 #else
 # include <CL/opencl.h>
 #endif
@@ -18,6 +23,12 @@
 #define VSYNC					1
 
 #define DEVICE					CL_DEVICE_TYPE_GPU
+
+#ifdef __APPLE__
+# define SHARING_EXTENSION		"cl_APPLE_gl_sharing"
+#else
+# define SHARING_EXTENSION		"cl_khr_gl_sharing"
+#endif
 
 namespace	pribault
 {

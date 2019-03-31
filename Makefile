@@ -1,6 +1,6 @@
 NAME =	Particle_System
 CC =	clang++
-FLAGS =	-Wall -Wextra
+FLAGS =	-Wall -Wextra -std=c++11
 
 SRC_DIR =	src
 OBJ_DIR =	.obj
@@ -24,6 +24,7 @@ ifeq ($(OS), Linux)
 LIBS =	-lOpenCL -lGLEW -lGL -lSDL2 -lm
 else
 ifeq ($(OS), Darwin)
+LIBS =	-framework OpenCL -framework OpenGL -lSDL2 -lm
 endif
 endif
 

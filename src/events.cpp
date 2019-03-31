@@ -199,6 +199,10 @@ void	MouseButtonEventHandler(const SDL_Event &e)
 void	MouseWheelEventHandler(const SDL_Event &e)
 {
 	SDL_MouseWheelEvent event = e.wheel;
+
+	if (event.y)
+		event.y /= fabs(event.y);
+	_log << "event.y=" << event.y << std::endl;
 	if (isPressed(SDLK_LCTRL))
 	{
 		deleteBuffers();
