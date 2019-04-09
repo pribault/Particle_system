@@ -1,6 +1,6 @@
 #define ITERATIONS	100
 
-__kernel void	init_colors_burning_ship(__global __read_write float4 *colors, double n)
+__kernel void	init_colors_burning_ship(__global __read_write float4 *colors, double n, double alpha)
 {
 	size_t	index = get_global_id(0);
 	double	length = sqrt(n);
@@ -20,7 +20,7 @@ __kernel void	init_colors_burning_ship(__global __read_write float4 *colors, dou
 	colors[index] = (float4){c.x / 2 + 0.5, c.y / 2 + 0.5, 0.2, d};
 }
 
-__kernel void	init_colors_rainbow(__global __read_write float4 *colors, double n)
+__kernel void	init_colors_rainbow(__global __read_write float4 *colors, double n, double alpha)
 {
 	size_t	index = get_global_id(0);
 	double	length = cbrt(n);
@@ -66,5 +66,5 @@ __kernel void	init_colors_rainbow(__global __read_write float4 *colors, double n
 	colors[index] = (float4){
 		fmod((double)index, length) * a,
 		fmod((double)index / length, length) * a,
-		((double)index / pow(length, 2)) * a, 1};
+		((double)index / pow(length, 2)) * a, alpha};
 }

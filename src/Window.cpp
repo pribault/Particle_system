@@ -77,10 +77,10 @@ pribault::Window::Window(const std::string &title, const int &width, const int &
 	**	OpenGL initialization
 	*/
 
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glEnable(GL_MULTISAMPLE);
 
 	glGenVertexArrays(1, &_vao);
 	error = glGetError();

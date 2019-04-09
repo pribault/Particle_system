@@ -49,6 +49,7 @@ size_t				particles = 1000000;
 
 double				gravity = 0.0001;
 double				reformer = 0.002;
+double				alpha = 0.2;
 
 std::string		strSize(size_t size)
 {
@@ -86,37 +87,24 @@ void	sigHandler(int sig)
 
 void	deleteKernels(void)
 {
-	if (init_colors_burning_ship)
-		delete init_colors_burning_ship;
-	if (init_colors_rainbow)
-		delete init_colors_rainbow;
-	if (init_colors)
-		delete init_colors;
-	if (move_particles_to_cursor)
-		delete move_particles_to_cursor;
-	if (move_particles)
-		delete move_particles;
-	if (move)
-		delete move;
-	if (init_speed)
-		delete init_speed;
-	if (init_square)
-		delete init_square;
-	if (init)
-		delete init;
+	DELETE(init_colors_burning_ship);
+	DELETE(init_colors_rainbow);
+	DELETE(init_colors);
+	DELETE(move_particles_to_cursor);
+	DELETE(move_particles);
+	DELETE(move);
+	DELETE(init_speed);
+	DELETE(init_square);
+	DELETE(init);
 	_log << "kernels deleted" << std::endl;
 }
 
 void	deleteBuffers(void)
 {
-	if (particleDefaultPositions)
-		delete particleDefaultPositions;
-	if (particlePositions)
-		delete particlePositions;
-	if (particleSpeeds)
-		delete particleSpeeds;
-	if (particleColors)
-		delete particleColors;
+	DELETE(particleDefaultPositions);
+	DELETE(particlePositions);
+	DELETE(particleSpeeds);
+	DELETE(particleColors);
 	_log << "buffers deleted" << std::endl;
 }
 
@@ -125,10 +113,8 @@ void	atExit(void)
 	_log << "exiting..." << std::endl;
 	deleteBuffers();
 	deleteKernels();
-	if (renderer)
-		delete renderer;
-	if (window)
-		delete window;
+	DELETE(renderer);
+	DELETE(window);
 }
 
 void	initKernels(void)
@@ -206,6 +192,7 @@ void	initBuffers(void)
 
 		init_colors_rainbow->setArg(*particleColors, 0);
 		init_colors_rainbow->setArg((double)particles, 1);
+		init_colors_rainbow->setArg(alpha, 2);
 
 		init_colors_rainbow->enqueue(particles);
 
@@ -303,9 +290,8 @@ int		main(int, char **)
 			{
 				handlers.at(event.type)(event);
 			}
-			catch (const std::exception &e)
+			catch (const std::exception &)
 			{
-				_log << "cannot handle event (type=" << event.type << "):" << e.what();
 			}
 		handleEvents();
 

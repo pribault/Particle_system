@@ -210,6 +210,20 @@ void	MouseWheelEventHandler(const SDL_Event &e)
 		}
 		initBuffers();
 	}
+	else if (isPressed(SDLK_LALT))
+	{
+		alpha *= pow(2, event.y);
+
+		particleColors->acquire();
+
+		init_colors_rainbow->setArg(*particleColors, 0);
+		init_colors_rainbow->setArg((double)particles, 1);
+		init_colors_rainbow->setArg(alpha, 2);
+
+		init_colors_rainbow->enqueue(particles);
+
+		particleColors->release();
+	}
 	else
 		gravity *= pow(2, event.y);
 }

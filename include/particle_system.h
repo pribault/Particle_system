@@ -16,6 +16,8 @@
 #define STEP		6
 #define ANGLE		glm::radians((float)50)
 
+#define DELETE(obj)	if (obj) {delete obj; obj = nullptr;}
+
 void	drawParticles(gl::Program *program, const Camera &camera);
 
 std::string	strSize(size_t size);
@@ -87,3 +89,4 @@ extern Buffer<cl_float4>	*temporaryParticleColors;
 
 extern size_t				temporaryParticles;
 extern size_t				temporaryParticlesIndex;
+extern double				alpha;
