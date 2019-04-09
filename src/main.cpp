@@ -384,6 +384,12 @@ int		main(int, char **)
 		if (isPressed(SDLK_DOWN))
 			camera.turnDown(ANGLE * ((float)diff.count() / (float)1000));
 
+		if (isPressed(SDLK_r))
+		{
+			deleteBuffers();
+			initBuffers();
+		}
+
 		drawParticles(renderer, camera);
 	}
 	return (EXIT_SUCCESS);
