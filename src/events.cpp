@@ -117,6 +117,12 @@ void	KeyEventHandler(const SDL_Event &e)
 							window->clFinish();
 							break ;
 						}
+						case SDLK_RETURN:
+						case SDLK_KP_ENTER:
+						{
+							pause = (pause) ? false : true;
+							break ;
+						}
 						default:
 							break ;
 					}
@@ -223,6 +229,8 @@ void	MouseWheelEventHandler(const SDL_Event &e)
 		init_colors_rainbow->enqueue(particles);
 
 		particleColors->release();
+
+		window->clFinish();
 	}
 	else
 		gravity *= pow(2, event.y);

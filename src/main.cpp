@@ -51,6 +51,8 @@ double				gravity = 0.0001;
 double				reformer = 0.002;
 double				alpha = 0.2;
 
+bool				pause = false;
+
 std::string		strSize(size_t size)
 {
 	std::string	str;
@@ -324,7 +326,7 @@ int		main(int, char **)
 				_log << "cannot launch move_particles_to_cursor kernel: " << e.what() << std::endl;
 			}
 		}
-		else
+		else if (!pause)
 		{
 			try
 			{

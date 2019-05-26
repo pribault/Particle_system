@@ -25,44 +25,7 @@ __kernel void	init_colors_rainbow(__global __read_write float4 *colors, double n
 	size_t	index = get_global_id(0);
 	double	length = cbrt(n);
 	double	a = 1 / (length - 1);
-	/*float	x = trunc(fmod((double)index, length)) * (2 / (length - 1)) - 1;
 
-	if (x < -0.666666)
-		colors[index] = (float4){
-			1,
-			0,
-			-3 * x - 2,
-			10000 / sqrt(n)};
-	else if (x < -0.333333)
-		colors[index] = (float4){
-			1,
-			3 * x + 2,
-			0,
-			10000 / sqrt(n)};
-	else if (x < 0)
-		colors[index] = (float4){
-			-3 * x,
-			1,
-			0,
-			10000 / sqrt(n)};
-	else if (x < 0.333333)
-		colors[index] = (float4){
-			0,
-			1,
-			3 * x,
-			10000 / sqrt(n)};
-	else if (x < 0.666666)
-		colors[index] = (float4){
-			0,
-			-3 * x + 2,
-			1,
-			10000 / sqrt(n)};
-	else
-		colors[index] = (float4){
-			3 * x - 2,
-			0,
-			1,
-			10000 / sqrt(n)};*/
 	colors[index] = (float4){
 		fmod((double)index, length) * a,
 		fmod((double)index / length, length) * a,
