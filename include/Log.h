@@ -10,7 +10,7 @@
 # include <iostream>
 #endif
 
-#ifndef __linux__
+#if (defined __WIN32__ || defined __WIN64__)
 # pragma warning(disable : 4996)
 #endif
 

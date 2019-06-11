@@ -51,7 +51,7 @@ double				gravity = 0.0001;
 double				reformer = 0.002;
 double				alpha = 0.2;
 
-bool				pause = false;
+bool				gPause = false;
 
 std::string		strSize(size_t size)
 {
@@ -202,7 +202,7 @@ void	initBuffers(void)
 
 		window->clFinish();
 
-		_log << "buffers initialized with " << particles << "particles" << std::endl;
+		_log << "buffers initialized with " << particles << " particles" << std::endl;
 	}
 	catch (const std::exception &e)
 	{
@@ -232,7 +232,7 @@ cl_float4	screenToWorldCoordinates(const Camera &camera, const glm::vec4 &coords
 		coords.y * camera.getFov() / 2, glm::rotate(camera.getDir(), glm::radians((float)-90.0), camera.getUp())
 	);
 	result = dir * coords.z + camera.getPos();
-	return ((cl_float4){result.x, result.y, result.z, 0});
+	return ((cl_float4){{result.x, result.y, result.z, 0}});
 }
 
 int		main(int, char **)
@@ -326,7 +326,7 @@ int		main(int, char **)
 				_log << "cannot launch move_particles_to_cursor kernel: " << e.what() << std::endl;
 			}
 		}
-		else if (!pause)
+		else if (!gPause)
 		{
 			try
 			{

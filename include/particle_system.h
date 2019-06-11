@@ -91,4 +91,4 @@ extern size_t				temporaryParticles;
 extern size_t				temporaryParticlesIndex;
 extern double				alpha;
 
-extern bool					pause;
+extern bool					gPause;
