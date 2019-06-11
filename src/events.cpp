@@ -206,9 +206,9 @@ void	MouseWheelEventHandler(const SDL_Event &e)
 {
 	SDL_MouseWheelEvent event = e.wheel;
 
+	_log << "event.y=" << event.y << std::endl;
 	if (event.y)
 		event.y /= fabs(event.y);
-	_log << "event.y=" << event.y << std::endl;
 	if (isPressed(SDLK_LCTRL))
 	{
 		deleteBuffers();
@@ -220,7 +220,7 @@ void	MouseWheelEventHandler(const SDL_Event &e)
 		}
 		initBuffers();
 	}
-	else if (isPressed(SDLK_LALT))
+	else if (isPressed(SDLK_c))
 	{
 		alpha *= pow(2, event.y);
 

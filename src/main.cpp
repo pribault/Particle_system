@@ -216,8 +216,10 @@ void	printHelp(void)
 	_log << "commands:" << std::endl
 		<< "	- escape: quit program" << std::endl
 		<< "	- left click: attract particles to your cursor" << std::endl
+		<< "	- enter: pause" << std::endl
 		<< "	- mouse wheel: increase or decrease attraction force" << std::endl
 		<< "	- lshift + mouse wheel: increase or decrease particle number" << std::endl
+		<< "	- c + mouse wheel: increase or decrease color intensity" << std::endl
 		<< "	- 1: set particles default position to square" << std::endl
 		<< "	- 2: set particles default position to circle" << std::endl;
 }
