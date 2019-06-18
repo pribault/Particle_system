@@ -30,7 +30,7 @@ cl::Kernel			*move_particles_to_cursor = nullptr;
 
 cl::Program			*init_colors = nullptr;
 cl::Kernel			*init_colors_rainbow = nullptr;
-cl::Kernel			*init_colors_burning_ship = nullptr;
+cl::Kernel			*init_colors_mandelbulb = nullptr;
 
 Buffer<cl_float4>	*particleDefaultPositions = nullptr;
 Buffer<cl_float4>	*particlePositions = nullptr;
@@ -89,7 +89,7 @@ void	sigHandler(int sig)
 
 void	deleteKernels(void)
 {
-	DELETE(init_colors_burning_ship);
+	DELETE(init_colors_mandelbulb);
 	DELETE(init_colors_rainbow);
 	DELETE(init_colors);
 	DELETE(move_particles_to_cursor);
@@ -141,7 +141,7 @@ void	initKernels(void)
 		move_particles = new cl::Kernel(*move, "move_particles");
 		move_particles_to_cursor = new cl::Kernel(*move, "move_particles_to_cursor");
 		init_colors_rainbow = new cl::Kernel(*init_colors, "init_colors_rainbow");
-		init_colors_burning_ship = new cl::Kernel(*init_colors, "init_colors_burning_ship");
+		init_colors_mandelbulb = new cl::Kernel(*init_colors, "init_colors_mandelbulb");
 	}
 	catch (const std::exception &e)
 	{
