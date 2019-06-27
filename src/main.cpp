@@ -32,6 +32,8 @@ cl::Program			*init_colors = nullptr;
 cl::Kernel			*init_colors_rainbow = nullptr;
 cl::Kernel			*init_colors_mandelbulb = nullptr;
 
+cl::Kernel			*colors_kernels = nullptr;
+
 Buffer<cl_float4>	*particleDefaultPositions = nullptr;
 Buffer<cl_float4>	*particlePositions = nullptr;
 Buffer<cl_float4>	*particleSpeeds = nullptr;
@@ -142,6 +144,7 @@ void	initKernels(void)
 		move_particles_to_cursor = new cl::Kernel(*move, "move_particles_to_cursor");
 		init_colors_rainbow = new cl::Kernel(*init_colors, "init_colors_rainbow");
 		init_colors_mandelbulb = new cl::Kernel(*init_colors, "init_colors_mandelbulb");
+		colors_kernels = init_colors_rainbow;
 	}
 	catch (const std::exception &e)
 	{
@@ -192,11 +195,11 @@ void	initBuffers(void)
 
 		particleColors->acquire();
 
-		init_colors_rainbow->setArg(*particleColors, 0);
-		init_colors_rainbow->setArg((double)particles, 1);
-		init_colors_rainbow->setArg(alpha, 2);
+		colors_kernels->setArg(*particleColors, 0);
+		colors_kernels->setArg((double)particles, 1);
+		colors_kernels->setArg(alpha, 2);
 
-		init_colors_rainbow->enqueue(particles);
+		colors_kernels->enqueue(particles);
 
 		particleColors->release();
 

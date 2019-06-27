@@ -226,11 +226,11 @@ void	MouseWheelEventHandler(const SDL_Event &e)
 
 		particleColors->acquire();
 
-		init_colors_rainbow->setArg(*particleColors, 0);
-		init_colors_rainbow->setArg((double)particles, 1);
-		init_colors_rainbow->setArg(alpha, 2);
+		colors_kernels->setArg(*particleColors, 0);
+		colors_kernels->setArg((double)particles, 1);
+		colors_kernels->setArg(alpha, 2);
 
-		init_colors_rainbow->enqueue(particles);
+		colors_kernels->enqueue(particles);
 
 		particleColors->release();
 

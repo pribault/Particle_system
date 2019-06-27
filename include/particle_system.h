@@ -72,8 +72,7 @@ extern cl::Kernel			*move_particles;
 extern cl::Kernel			*move_particles_to_cursor;
 
 extern cl::Program			*init_colors;
-extern cl::Kernel			*init_colors_rainbow;
-extern cl::Kernel			*init_colors_mandelbulb;
+extern cl::Kernel			*colors_kernels;
 
 template	<typename T>
 class		Buffer;

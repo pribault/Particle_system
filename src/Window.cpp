@@ -30,6 +30,7 @@ pribault::Window::Window(const std::string &title, const int &width, const int &
 	std::string buffer;
 	size_t		returnedSize;
 	cl_int		error;
+	GLenum		ret;
 
 	/*
 	**	SDL2 / OpenGL initialization
