@@ -1,6 +1,7 @@
 #define ITERATIONS	(float)100
 #define SIZE		(float)1
-#define LIMIT		(float)4
+#define LIMIT		(float)1.5
+#define POWER		(float)8
 
 #define SIZEOF_STATIC_ARRAY(array)	(sizeof(array) / sizeof(array[0]))
 
@@ -36,26 +37,37 @@ __constant float4	palette[] = {
 __kernel void	init_colors_mandelbulb(__global __read_write float4 *colors, double n, double alpha)
 {
 	size_t	index = get_global_id(0);
-	double	length = cbrt(n);
-	float4	z = {0, 0, 0, 0};
-	float4	c = SIZE * (float4){
-		0,
-		2 * fmod(index, length) / length - 1,
-		2 * fmod(index / length, length) / length - 1,
-		2 * (index / pow(length, 2)) / length - 1,
+	double	l = cbrt(n);
+	float3	pos = SIZE * (float3){
+		2 * fmod(index, l) / l - 1,
+		2 * fmod(index / l, l) / l - 1,
+		2 * (index / pow(l, 2)) / l - 1
 	};
+	float3	z = pos;
+	float	theta;
+	float	phi;
+	float	dr = 1;
+	float	r;
 	size_t	i;
 
 	for (i = 0; i < ITERATIONS; i++)
 	{
-		z = exp_complex(z, 8) + c;
-		if (pow(z.x, 2) + pow(z.y, 2) + pow(z.z, 2) + pow(z.w, 2) >= LIMIT)
+		r = length(z);
+		if (r > 1.5)
 		{
 			colors[index] = (float4){0, 0, 0, 0};
 			return ;
 		}
+		theta = acos(z.z / r);
+		phi = atan(z.y / z.x);
+		dr = pow(r, POWER - 1) * POWER * dr + 1;
+		z = pow(r, POWER) * (float3){
+			sin(POWER * theta) * cos(POWER * phi),
+			sin(POWER * theta) * sin(POWER * phi),
+			cos(POWER * theta)
+		} + pos;
 	}
-	colors[index] = ((float)i / ITERATIONS) * palette[(int)round(SIZEOF_STATIC_ARRAY(palette) * (pow(z.x, 2) + pow(z.y, 2) + pow(z.z, 2) + pow(z.w, 2)) / LIMIT)];
+	colors[index] = ((float)i / ITERATIONS) * palette[(int)round(SIZEOF_STATIC_ARRAY(palette) * r / LIMIT)];
 	colors[index].w = alpha;
 }
 
