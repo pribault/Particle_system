@@ -91,29 +91,69 @@ void	KeyEventHandler(const SDL_Event &e)
 					{
 						case SDLK_1:
 						{
-							particleDefaultPositions->acquire();
+							if (isPressed(SDLK_LCTRL))
+							{
+								color_kernel = init_colors_rainbow;
 
-							init_square->setArg(*particleDefaultPositions, 0);
-							init_square->setArg((double)particles, 1);
+								particleColors->acquire();
 
-							init_square->enqueue(particles);
+								color_kernel->setArg(*particleColors, 0);
+								color_kernel->setArg((double)particles, 1);
+								color_kernel->setArg(alpha, 2);
 
-							particleDefaultPositions->release();
+								color_kernel->enqueue(particles);
 
+								particleColors->release();
+							}
+							else
+							{
+								color_kernel = init_colors_mandelbulb;
+
+								init_position = init_square;
+
+								particleDefaultPositions->acquire();
+
+								init_square->setArg(*particleDefaultPositions, 0);
+								init_square->setArg((double)particles, 1);
+
+								init_square->enqueue(particles);
+
+								particleDefaultPositions->release();
+
+							}
 							window->clFinish();
 							break ;
 						}
 						case SDLK_2:
 						{
-							particleDefaultPositions->acquire();
+							if (isPressed(SDLK_LCTRL))
+							{
+								color_kernel = init_colors_mandelbulb;
 
-							init_circle->setArg(*particleDefaultPositions, 0);
-							init_circle->setArg((double)particles, 1);
+								particleColors->acquire();
 
-							init_circle->enqueue(particles);
+								color_kernel->setArg(*particleColors, 0);
+								color_kernel->setArg((double)particles, 1);
+								color_kernel->setArg(alpha, 2);
 
-							particleDefaultPositions->release();
+								color_kernel->enqueue(particles);
 
+								particleColors->release();
+							}
+							else
+							{
+								init_position = init_circle;
+
+								particleDefaultPositions->acquire();
+
+								init_position->setArg(*particleDefaultPositions, 0);
+								init_position->setArg((double)particles, 1);
+
+								init_position->enqueue(particles);
+
+								particleDefaultPositions->release();
+
+							}
 							window->clFinish();
 							break ;
 						}
@@ -226,11 +266,11 @@ void	MouseWheelEventHandler(const SDL_Event &e)
 
 		particleColors->acquire();
 
-		colors_kernels->setArg(*particleColors, 0);
-		colors_kernels->setArg((double)particles, 1);
-		colors_kernels->setArg(alpha, 2);
+		color_kernel->setArg(*particleColors, 0);
+		color_kernel->setArg((double)particles, 1);
+		color_kernel->setArg(alpha, 2);
 
-		colors_kernels->enqueue(particles);
+		color_kernel->enqueue(particles);
 
 		particleColors->release();
 

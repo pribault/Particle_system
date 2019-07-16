@@ -24,6 +24,8 @@ cl::Kernel			*init_square = nullptr;
 cl::Kernel			*init_circle = nullptr;
 cl::Kernel			*init_speed = nullptr;
 
+cl::Kernel			*init_position = nullptr;
+
 cl::Program			*move = nullptr;
 cl::Kernel			*move_particles = nullptr;
 cl::Kernel			*move_particles_to_cursor = nullptr;
@@ -32,7 +34,7 @@ cl::Program			*init_colors = nullptr;
 cl::Kernel			*init_colors_rainbow = nullptr;
 cl::Kernel			*init_colors_mandelbulb = nullptr;
 
-cl::Kernel			*colors_kernels = nullptr;
+cl::Kernel			*color_kernel = nullptr;
 
 Buffer<cl_float4>	*particleDefaultPositions = nullptr;
 Buffer<cl_float4>	*particlePositions = nullptr;
@@ -139,12 +141,13 @@ void	initKernels(void)
 	{
 		init_square = new cl::Kernel(*init, "init_square");
 		init_circle = new cl::Kernel(*init, "init_circle");
+		init_position = init_square;
 		init_speed = new cl::Kernel(*init, "init_speed");
 		move_particles = new cl::Kernel(*move, "move_particles");
 		move_particles_to_cursor = new cl::Kernel(*move, "move_particles_to_cursor");
 		init_colors_rainbow = new cl::Kernel(*init_colors, "init_colors_rainbow");
 		init_colors_mandelbulb = new cl::Kernel(*init_colors, "init_colors_mandelbulb");
-		colors_kernels = init_colors_rainbow;
+		color_kernel = init_colors_rainbow;
 	}
 	catch (const std::exception &e)
 	{
@@ -166,10 +169,10 @@ void	initBuffers(void)
 
 		particleDefaultPositions->acquire();
 
-		init_square->setArg(*particleDefaultPositions, 0);
-		init_square->setArg((double)particles, 1);
+		init_position->setArg(*particleDefaultPositions, 0);
+		init_position->setArg((double)particles, 1);
 
-		init_square->enqueue(particles);
+		init_position->enqueue(particles);
 
 		//	pos
 
@@ -195,11 +198,11 @@ void	initBuffers(void)
 
 		particleColors->acquire();
 
-		colors_kernels->setArg(*particleColors, 0);
-		colors_kernels->setArg((double)particles, 1);
-		colors_kernels->setArg(alpha, 2);
+		color_kernel->setArg(*particleColors, 0);
+		color_kernel->setArg((double)particles, 1);
+		color_kernel->setArg(alpha, 2);
 
-		colors_kernels->enqueue(particles);
+		color_kernel->enqueue(particles);
 
 		particleColors->release();
 
@@ -393,8 +396,31 @@ int		main(int, char **)
 
 		if (isPressed(SDLK_r))
 		{
-			deleteBuffers();
-			initBuffers();
+			*particlePositions = *particleDefaultPositions;
+
+			//	speed
+
+			particleSpeeds->acquire();
+
+			init_speed->setArg(*particleSpeeds, 0);
+
+			init_speed->enqueue(particles);
+
+			particleSpeeds->release();
+
+			//	colors
+
+			particleColors->acquire();
+
+			color_kernel->setArg(*particleColors, 0);
+			color_kernel->setArg((double)particles, 1);
+			color_kernel->setArg(alpha, 2);
+
+			color_kernel->enqueue(particles);
+
+			particleColors->release();
+
+			window->clFinish();
 		}
 
 		drawParticles(renderer, camera);

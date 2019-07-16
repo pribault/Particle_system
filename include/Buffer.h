@@ -68,11 +68,11 @@ class	Buffer
 			_log << "buffer deleted" << std::endl;
 		}
 
-		size_t	getSize(void)
+		size_t	getSize(void) const
 		{
 			return (_size);
 		}
-		void	bind(void)
+		void	bind(void) const
 		{
 			GLenum	error;
 
@@ -101,6 +101,14 @@ class	Buffer
 			error = clEnqueueReleaseGLObjects(window->getQueue(), 1, &_clId, 0, NULL, NULL);
 			if (error != CL_SUCCESS)
 				throw (pribault::BasicException(std::string("OpenCL error on clEnqueueAcquireGLObjects: ").append(std::to_string(error))));
+		}
+
+		Buffer<T>	&operator=(const Buffer<T> &b)
+		{
+			if (b.getSize() != getSize())
+				throw (pribault::BasicException("buffer size mismatch"));
+			GL_CALL(glCopyNamedBufferSubData(b._glId, _glId, 0, 0, getSize()));
+			return (*this);
 		}
 	private:
 		GLuint	_glId;

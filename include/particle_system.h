@@ -9,8 +9,10 @@
 #include <glm/trigonometric.hpp>
 
 #define TITLE		"Particle_System"
-#define WIDTH		1440
-#define HEIGHT		810
+// #define WIDTH		1440
+// #define HEIGHT		810
+#define WIDTH		1920
+#define HEIGHT		1080
 #define FPS_LOCK	60
 #define FOV			glm::radians((float)45)
 #define STEP		6
@@ -67,12 +69,16 @@ extern cl::Kernel			*init_square;
 extern cl::Kernel			*init_circle;
 extern cl::Kernel			*init_speed;
 
+extern cl::Kernel			*init_position;
+
 extern cl::Program			*move;
 extern cl::Kernel			*move_particles;
 extern cl::Kernel			*move_particles_to_cursor;
 
 extern cl::Program			*init_colors;
-extern cl::Kernel			*colors_kernels;
+extern cl::Kernel			*init_colors_rainbow;
+extern cl::Kernel			*init_colors_mandelbulb;
+extern cl::Kernel			*color_kernel;
 
 template	<typename T>
 class		Buffer;

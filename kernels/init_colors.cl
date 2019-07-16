@@ -1,5 +1,5 @@
 #define ITERATIONS	(float)100
-#define SIZE		(float)2
+#define SIZE		(float)1
 #define LIMIT		(float)4
 
 #define SIZEOF_STATIC_ARRAY(array)	(sizeof(array) / sizeof(array[0]))
